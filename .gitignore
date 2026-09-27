@@ -38,6 +38,8 @@ main.db
 *.session
 
 src/main/resources/application.properties
+src/main/resources/application-dev.properties
+src/main/resources/application-devfull.properties
 .env
 secrets.*
 
