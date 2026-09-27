@@ -54,15 +54,25 @@ public interface ConfigRepository extends JpaRepository<Config, Long> {
             found.setId(1L);
             // непустые списки перезаписываем, пустые/null — не трогаем существующие значения
             if (nonEmpty(config.getTg_ids()))  found.setTg_ids(config.getTg_ids());
-            if (nonEmpty(config.getMax_ids())) found.setMax_ids(config.getMax_ids());
+            if (nonEmpty(config.getMax_ids())) {
+                found.setMax_ids(config.getMax_ids());
+                System.out.println("Updated max ids!");
+            }
             if (nonEmpty(config.getVk_ids()))  found.setVk_ids(config.getVk_ids());
             return save(found);
         }
-        config.setId(1L);
-        return save(config);
+        else{
+            config.setId(1L);
+            System.out.println(config);
+            return save(config);
+        }
+
+
     }
 
     private static boolean nonEmpty(List<String> ids) {
         return ids != null && !ids.isEmpty();
     }
+
+
 }

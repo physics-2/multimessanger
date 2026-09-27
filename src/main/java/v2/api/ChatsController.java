@@ -2,8 +2,10 @@ package v2.api;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import v2.connectors.base.BaseConnector;
+import v2.dto.PaginatedResponse;
 import v2.services.ChatService;
 
 import java.util.ArrayList;
@@ -40,6 +42,13 @@ public class ChatsController {
     @GetMapping("/chats")
     public List<ChatService.ChatDto> getChats() {
         return chatService.getAllChatsForFrontend();
+    }
+
+    @GetMapping("/chatsPaginated")
+    public PaginatedResponse<ChatService.ChatDto> getChats(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "50") int size) {
+        return chatService.getChatsPaginated(page, size);
     }
 
     /**

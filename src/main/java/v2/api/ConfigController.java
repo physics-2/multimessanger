@@ -2,8 +2,10 @@ package v2.api;
 
 import org.springframework.web.bind.annotation.*;
 import v2.entity.Config;
+import v2.repository.ConfigRepository;
 import v2.services.ConfigService;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,8 +20,10 @@ public class ConfigController {
 
     private final ConfigService configService;
 
+
     public ConfigController(ConfigService configService) {
         this.configService = configService;
+
     }
 
     /**
@@ -51,12 +55,12 @@ public class ConfigController {
     public Map<String, Object> updateVkIds(@RequestBody List<String> ids) {
         Map<String, Object> response = new HashMap<>();
         try {
-            Config config = configService.getConfig();
-            config.setVk_ids(ids != null ? ids : new java.util.ArrayList<>());
-            configService.saveOrUpdateConfig(config);
+
+            configService.saveOrUpdateConfig(new Config(ids,new ArrayList<>(),new ArrayList<>()));
+
             response.put("success", true);
             response.put("message", "VK IDs обновлены");
-            response.put("vkIds", config.getVk_ids());
+            response.put("vkIds", ids);
         } catch (Exception e) {
             response.put("success", false);
             response.put("message", "Ошибка обновления VK IDs: " + e.getMessage());
@@ -73,12 +77,11 @@ public class ConfigController {
     public Map<String, Object> updateMaxIds(@RequestBody List<String> ids) {
         Map<String, Object> response = new HashMap<>();
         try {
-            Config config = configService.getConfig();
-            config.setMax_ids(ids != null ? ids : new java.util.ArrayList<>());
-            configService.saveOrUpdateConfig(config);
+
+            configService.saveOrUpdateConfig(new Config(ids,new ArrayList<>(),new ArrayList<>()));
             response.put("success", true);
             response.put("message", "MAX IDs обновлены");
-            response.put("maxIds", config.getMax_ids());
+            response.put("maxIds", ids);
         } catch (Exception e) {
             response.put("success", false);
             response.put("message", "Ошибка обновления MAX IDs: " + e.getMessage());
@@ -95,12 +98,11 @@ public class ConfigController {
     public Map<String, Object> updateTelegramIds(@RequestBody List<String> ids) {
         Map<String, Object> response = new HashMap<>();
         try {
-            Config config = configService.getConfig();
-            config.setTg_ids(ids != null ? ids : new java.util.ArrayList<>());
-            configService.saveOrUpdateConfig(config);
+
+            configService.saveOrUpdateConfig(new Config(new ArrayList<>(),ids,new ArrayList<>()));
             response.put("success", true);
             response.put("message", "Telegram IDs обновлены");
-            response.put("tgIds", config.getTg_ids());
+            response.put("tgIds", ids);
         } catch (Exception e) {
             response.put("success", false);
             response.put("message", "Ошибка обновления Telegram IDs: " + e.getMessage());
