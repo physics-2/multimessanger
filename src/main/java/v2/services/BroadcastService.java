@@ -2,13 +2,18 @@ package v2.services;
 
 import org.springframework.stereotype.Service;
 import v2.connectors.base.BaseConnector;
+import v2.connectors.max.MaxConnector;
+import v2.connectors.tg.TgConnector;
+import v2.connectors.vk.VkConnector;
 import v2.dto.BroadcastRequest;
 import v2.dto.BroadcastResponse;
+import v2.entity.Message;
 import v2.repository.UserRepository;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -38,14 +43,18 @@ import java.util.stream.Collectors;
 public class BroadcastService {
 
     private final Map<String, BaseConnector> connectors;
-    private final UserRepository userTagRepository;
 
-    public BroadcastService(List<BaseConnector> connectorList, UserRepository userTagRepository) {
-        this.connectors = connectorList.stream()
-                .collect(Collectors.toMap(
-                        c -> c.platform().toLowerCase(),
-                        c -> c
-                ));
+    private final UserRepository userTagRepository;
+    ConfigService configService;
+    MessageService messageService;
+
+    public BroadcastService(MaxConnector maxConnector, TgConnector tgConnector, VkConnector vkConnector, UserRepository userTagRepository,MessageService messageService,ConfigService configService) {
+        this.connectors = new HashMap<>();
+        connectors.put("max",maxConnector);
+        connectors.put("tg",tgConnector);
+        connectors.put("vk",vkConnector);
+        this.messageService = messageService;
+        this.configService = configService;
         this.userTagRepository = userTagRepository;
     }
 
@@ -65,6 +74,7 @@ public class BroadcastService {
                 .map(String::trim)
                 .distinct()
                 .toList();
+
         if (tags.isEmpty()) {
             allErrors.put("request", "Все переданные теги пустые");
             return new BroadcastResponse(0, 0, 0, allErrors);
@@ -109,7 +119,9 @@ public class BroadcastService {
             try {
                 // userId конкретной соцсети: не шлём VK-аудиторию через TG и наоборот.
                 recipientIds = userTagRepository.findUserIdsBySourceAndTags(connectorType, tags);
-
+                System.out.println(recipientIds);
+                System.out.println("TEST STES");
+                System.out.println(connectorType);
                 // ⬇ Если теги у вас общие на все платформы и нужен один список на всех —
                 //   замените строку выше на:
                 // recipientIds = userTagRepository.findUserIdsByTags(tags);
@@ -147,6 +159,20 @@ public class BroadcastService {
         return new BroadcastResponse(totalRecipients, totalSuccess, totalFailed, allErrors);
     }
 
+    public long MaxUserIdToChatId(long userId){
+        List<Message> messages = messageService.findBySourceAndUserId("max",userId);
+        List<String> maxIds = configService.getConfig().getMax_ids();
+
+        int i = 0;
+        while(i < messages.size()){
+            System.out.println(messages.get(i).getChatId());
+            if(!maxIds.contains(String.valueOf(messages.get(i).getAuthorId()))){
+                return messages.get(i).getChatId();
+            }
+            i++;
+        }
+        return Long.parseLong(maxIds.get(0));
+    }
     /**
      * userId в таблице users — это уже id пользователя в соцсети (User.userId),
      * поэтому для VK он и есть peer_id личного диалога.
@@ -156,6 +182,9 @@ public class BroadcastService {
      * Для бесед VK peer_id = 2000000000 + chat_id (см. VkConnector.toPeerId).
      */
     private Long resolvePeerId(Long userId, String type) {
+        if(Objects.equals(type, "max")){
+            return MaxUserIdToChatId(userId);
+        }
         return userId;
     }
 

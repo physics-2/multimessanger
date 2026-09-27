@@ -105,9 +105,10 @@ public class TgConnector implements BaseConnector {
 
             mapper.setUserResolver(this::getOrFetchUser);
             scanner.setUserResolver(this::getOrFetchUser);
+            myUserId = client.getMeAsync().get().id;
 
             configRepository.saveOrUpdate(new v2.entity.Config(new ArrayList<>(),List.of(String.valueOf(client.getMeAsync().get().id)),new ArrayList<>()));
-
+            scanner.setMyUserId(client.getMeAsync().get().id);
             return "Клиент запущен";
         } catch (Exception e) {
             return "Ошибка: " + e.getMessage();
@@ -148,7 +149,10 @@ public class TgConnector implements BaseConnector {
     }
 
     private void onUpdateNewChat(TdApi.UpdateNewChat update) {
-        chatCache.put(update.chat.id, mapper.toChatMeta(update.chat));
+        ChatMeta meta = mapper.toChatMeta(update.chat);
+        meta.title();
+        if(!isChatAllowed(meta)) return;
+        chatCache.put(update.chat.id, meta);
     }
 
     private void onUpdateNewMessage(TdApi.UpdateNewMessage update) {
@@ -157,7 +161,6 @@ public class TgConnector implements BaseConnector {
 
             ChatMeta meta = chatCache.computeIfAbsent(update.message.chatId, this::fetchChatMeta);
             if (!isChatAllowed(meta)) return;
-
             long senderId = extractSenderId(update.message);
             if (update.message.senderId instanceof TdApi.MessageSenderUser) {
                 User user = getOrFetchUser(senderId);

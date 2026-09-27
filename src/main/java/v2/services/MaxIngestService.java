@@ -71,6 +71,7 @@ public class MaxIngestService {
     }
 
     public long getMyUserId() {
+
         return myUserId;
     }
 

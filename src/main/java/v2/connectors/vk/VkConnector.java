@@ -244,11 +244,11 @@ public class VkConnector implements BaseConnector, VkLongPoll.Sink {
             }
             JsonNode u = resp.path("response").path(0);
             long id = u.path("id").asLong(0);
-            if (id > 0) {
-                myUserId = id;
-                log.info("[VK] myUserId={} ({} {})", id,
-                        u.path("first_name").asText(""), u.path("last_name").asText(""));
-            }
+
+            myUserId = id;
+            log.info("[VK] myUserId={} ({} {})", id,
+                    u.path("first_name").asText(""), u.path("last_name").asText(""));
+
         } catch (Exception e) {
             log.warn("[VK] Не удалось определить myUserId: {}", describe(e));
         }
