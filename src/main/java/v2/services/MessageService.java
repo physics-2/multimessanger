@@ -65,14 +65,6 @@ public class MessageService {
         return msgRepo.searchByText(query);
     }
 
-    public List<Message> findBySourceAndUserId(String source,long userId){
-        return msgRepo.findBySourceAndUserId(source,userId);
-    }
-
-    public List<Message> findBySourceAndChatId(long chat_id){
-       return msgRepo.findByChatIdOrderByTimestampAsc(chat_id);
-    }
-
     public record MessageDto(Message msg, String authorName, String authorAvatar) {
         // геттеры для JSON
     }
