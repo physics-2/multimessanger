@@ -22,11 +22,7 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
     // Нужно для MessageService (проверка на дубликаты)
     boolean existsBySourceAndMessageId(String source, Long messageId);
 
-    Optional<Message> findBySourceAndMessageId(String source, Long userId);
-
-
-    @Query("SELECT m FROM Message m WHERE m.authorId = :messageId AND m.source = :source")
-    List<Message> findBySourceAndUserId(@Param("source") String source,@Param("messageId") Long messageId);
+    Optional<Message> findBySourceAndMessageId(String source, Long messageId);
 
     // Полнотекстовый поиск по сообщениям
     @Query("SELECT m FROM Message m WHERE LOWER(m.text) LIKE LOWER(CONCAT('%', :query, '%'))")
@@ -35,8 +31,4 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
     default Message saveOrUpdate(Message message) {
         return save(message);
     }
-
-
-    // Новый метод - возвращает только одно последнее сообщение
-    Optional<Message> findTopByChatIdOrderByTimestampDesc(Long chatId);
 }

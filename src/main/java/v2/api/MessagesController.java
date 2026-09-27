@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * История сообщений для фронтенда (index.html).
+ * История сообщений для фронтенда (messenger.html).
  *
  * Использует ТОЛЬКО публичные методы MessageService:
  *   - getMessagesForChat(Long chatId) → List<MessageDto>

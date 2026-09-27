@@ -72,9 +72,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @Query("SELECT DISTINCT u.userId FROM User u JOIN u.tags t WHERE t IN :tags")
     List<Long> findUserIdsByTags(@Param("tags") List<String> tags);
-
-    @Query("SELECT DISTINCT u FROM User u JOIN u.tags t WHERE t IN :tags")
-    List<User> findUsersByTags(@Param("tags") String tags);
     /**
      * То же, но с фильтром по соцсети — полезно, когда рассылка идёт через один коннектор:
      * у VK и TG userId живут в разных пространствах, и слать «VK-подписчикам» через TG нельзя.

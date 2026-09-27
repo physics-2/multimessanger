@@ -5,7 +5,6 @@ import v2.entity.Chat;
 import v2.entity.Message;
 import v2.entity.User;
 import java.util.ArrayList;
-import java.util.Objects;
 import java.util.function.Function;
 
 public class TgMessageMapper {
@@ -30,8 +29,8 @@ public class TgMessageMapper {
         long senderId = extractSenderId(tgMsg);
         String text = contentToText(tgMsg.content);
         String mediaUrl = mediaDownloader.extractMediaLocalPath(tgMsg.content);
-        System.out.println(mediaUrl);
-        return new Message("tg", tgMsg.id, tgMsg.chatId, senderId, text, mediaUrl, (long) tgMsg.date);
+
+        return new Message("tg", tgMsg.id, tgMsg.chatId, senderId, text, mediaUrl);
     }
 
     public User toDomainUser(TdApi.User user, String avatar) {
@@ -80,9 +79,9 @@ public class TgMessageMapper {
 
     private String contentToText(TdApi.MessageContent c) {
         if (c instanceof TdApi.MessageText t) return t.text.text;
-        if (c instanceof TdApi.MessagePhoto photo) return Objects.equals(photo.caption.text, "") ? "[Photo]" : photo.caption.text;
-        if (c instanceof TdApi.MessageVideo video) return Objects.equals(video.caption.text, "") ? "[Video]" : video.caption.text;
-        if(c instanceof TdApi.MessageDocument doc) return Objects.equals(doc.caption.text, "") ? "[Doc]" : doc.caption.text;
+        if (c instanceof TdApi.MessagePhoto photo) return photo.caption.text;
+        if (c instanceof TdApi.MessageVideo video) return video.caption.text;
+        if(c instanceof TdApi.MessageDocument doc) return doc.caption.text;
         return "[Anything]";
     }
 

@@ -16,6 +16,4 @@ public interface BaseApiConnector {
 
     // Конфигурация
     Map<String, Object> updateConfig(Map<String, Object> body);
-
-
 }

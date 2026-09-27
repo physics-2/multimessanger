@@ -25,24 +25,13 @@ public class UserService {
 
     // 3. Управление тегами (бизнес-логика!)
     public List<String> addTag(String source, Long userId, String tag) {
-        System.out.println("MMMMMMMMAX");
-        System.out.println(source );
-        System.out.println(userId);
-        System.out.println(tag);
         User user = repo.findBySourceAndUserId(source, userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-        System.out.println(user.getTags());
+
         if (!user.getTags().contains(tag)) {
-            System.out.println("SSSAVING TAG");
             user.getTags().add(tag);
             repo.save(user);
         }
-
-        User userLast = repo.findBySourceAndUserId(source, userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-
-        System.out.println(userLast.getTags());
-        System.out.println("MAAAAAAAAAAAAXXXX");
         return user.getTags();
     }
 
@@ -53,10 +42,6 @@ public class UserService {
         user.getTags().remove(tag);
         repo.save(user);
         return user.getTags();
-    }
-
-    public List<User> getUsersByTags(String tags){
-        return repo.findUsersByTags(tags);
     }
 
     // 4. Поиск пользователей (для фронта)

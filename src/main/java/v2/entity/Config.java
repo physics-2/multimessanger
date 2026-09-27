@@ -44,14 +44,4 @@ public class Config {
     public void setTg_ids(List<String> tg_ids) { this.tg_ids = tg_ids; }
     public List<String> getMax_ids() { return max_ids; }
     public void setMax_ids(List<String> max_ids) { this.max_ids = max_ids; }
-
-    @Override
-    public String toString() {
-        return "Config{" +
-                "id=" + id +
-                ", vk_ids=" + vk_ids +
-                ", tg_ids=" + tg_ids +
-                ", max_ids=" + max_ids +
-                '}';
-    }
 }
